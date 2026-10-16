@@ -1,6 +1,6 @@
-# Apartments cost analyser App
+# Apartments cost predictor App
 
-A Python-based application for analyzing and predicting apartment prices in Poland, helping users explore price trends, compare locations, and understand the factors affecting real estate prices.
+A Python-based application for analyzing and predicting apartment prices in Poland and Melbourne, helping users explore price trends, compare locations, and understand the factors affecting real estate prices.
 
 ## 📈 Datasets
 
