@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 apartments.db
 raport_czyszczenia.txt
+.venv/
