@@ -4,6 +4,7 @@ from pathlib import Path
 from tkinter import ttk, messagebox
 
 from TableTab import TableTab
+from NumericTab import NumericTab
 
 
 DB_FILE = Path(__file__).resolve().parent.parent / "apartments.db"
@@ -12,9 +13,9 @@ DB_FILE = Path(__file__).resolve().parent.parent / "apartments.db"
 class ApartmentsApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Analiza rynku nieruchomości – Polska i Melbourne")
-        self.geometry("1450x720")
-        self.minsize(1000, 550)
+        self.title("Analiza statystyczna nieruchomości — Polska i Melbourne")
+        self.geometry("1450x850")
+        self.minsize(1200, 700)
         self.connection = None
 
         self.open_database()
@@ -26,7 +27,7 @@ class ApartmentsApp(tk.Tk):
         self.notebook.pack(fill="both", expand=True, padx=15, pady=(22, 15))
 
         table_container = ttk.Frame(self.notebook)
-        self.notebook.add(table_container, text="Tabela")
+        self.notebook.add(table_container, text="Dane nieruchomości")
 
         self.dataset_notebook = ttk.Notebook(table_container)
         self.dataset_notebook.pack(fill="both", expand=True, padx=10, pady=10)
@@ -35,6 +36,8 @@ class ApartmentsApp(tk.Tk):
             self.dataset_notebook,
             connection=self.connection,
             table_name="apartments",
+            columns=("id", "city", "property_type", "area_m2", "rooms",
+                     "build_year", "centre_distance_km", "price_pln"),
         )
         self.dataset_notebook.add(self.poland_tab, text="Polska")
 
@@ -43,12 +46,14 @@ class ApartmentsApp(tk.Tk):
             connection=self.connection,
             table_name="apartments_melbourne",
             columns=(
-                "id", "suburb", "area_m2", "rooms", "build_year",
+                "id", "suburb", "property_type", "sale_date", "area_m2", "rooms", "build_year",
                 "centre_distance_km", "price_aud",
             ),
             headings={
                 "id": "ID",
                 "suburb": "Dzielnica",
+                "property_type": "Typ nieruchomości",
+                "sale_date": "Data sprzedaży",
                 "area_m2": "Powierzchnia [m²]",
                 "rooms": "Liczba pokoi",
                 "build_year": "Rok budowy",
@@ -77,6 +82,9 @@ class ApartmentsApp(tk.Tk):
             ),
         )
 
+        self.numeric_tab = NumericTab(self.notebook, self.connection)
+        self.notebook.add(self.numeric_tab, text="Dane numeryczne")
+
     def open_database(self):
         if not DB_FILE.exists():
             messagebox.showerror(
@@ -103,6 +111,17 @@ class ApartmentsApp(tk.Tk):
                 )
                 self.destroy()
                 return
+            for table in ("apartments", "apartments_melbourne"):
+                columns = {row[1] for row in connection.execute(f'PRAGMA table_info("{table}")')}
+                if not {"property_type", "sale_date", "area_m2_imputed"}.issubset(columns):
+                    connection.close()
+                    messagebox.showerror(
+                        "Nieaktualna baza danych",
+                        "Baza wymaga dat sprzedaży, typów nieruchomości i oznaczeń uzupełnień.\n\n"
+                        "Uruchom ponownie csv_to_db.py, aby odtworzyć ją z plików CSV.",
+                    )
+                    self.destroy()
+                    return
             self.connection = connection
         except sqlite3.Error as error:
             messagebox.showerror("Błąd bazy danych", str(error))

@@ -17,6 +17,7 @@ DEFAULT_HEADINGS = {
     "build_year": "Rok budowy",
     "centre_distance_km": "Odległość od centrum [km]",
     "price_pln": "Cena [zł]",
+    "property_type": "Typ nieruchomości",
 }
 DEFAULT_WIDTHS = {
     "id": 70,
