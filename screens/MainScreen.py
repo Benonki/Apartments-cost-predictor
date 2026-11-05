@@ -13,7 +13,7 @@ DB_FILE = Path(__file__).resolve().parent.parent / "apartments.db"
 class ApartmentsApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Analiza statystyczna nieruchomości — Polska i Melbourne")
+        self.title("Analiza statystyczna nieruchomości")
         self.geometry("1450x850")
         self.minsize(1200, 700)
         self.connection = None
